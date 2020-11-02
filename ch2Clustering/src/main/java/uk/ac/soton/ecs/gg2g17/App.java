@@ -9,6 +9,7 @@ import org.openimaj.image.connectedcomponent.GreyscaleConnectedComponentLabeler;
 import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.PixelProcessor;
+import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
@@ -27,12 +28,14 @@ public class App {
 
     private static MBFImage input = null;
     private static MBFImage input2 = null;
+    private static MBFImage input3 = null;
 
     public static void main( String[] args ) {
 
         init();
-       // example();
-        exercise1();
+        //example();
+        //exercise1();
+        exercise2();
 
     }
 
@@ -46,6 +49,7 @@ public class App {
         }
 
         input2 = input.clone();
+        input3 = input.clone();
 
     }
 
@@ -213,7 +217,98 @@ public class App {
         //Convert back into RGB colour space in order to display properly
         input2 = ColourSpace.convert(input2, ColourSpace.RGB);
         DisplayUtilities.display(input2);
+
+    }
+
+    public static void exercise2(){
+
+        //Convert the image from RGB colour space into LAB colour space
+        input3 = ColourSpace.convert(input3, ColourSpace.CIE_Lab);
+
+        //The argument is the number of clusters you want, optional second argument of max iterations
+        //you want (the default is 30 if this is not specified)
+        FloatKMeans cluster = FloatKMeans.createExact(2);
+
+        //Flatten the pixels into a single list of pixels
+        float[][] imageData = input3.getPixelVectorNative(new float[input3.getWidth() * input3.getHeight()][3]);
+
+        //Returns the cluster centroids which is the result of clustering the image data into the k clusters
+        FloatCentroidsResult result = cluster.cluster(imageData);
+        //It has a centroids field that can be accessed which is an array of all the centroids of each cluster
+
+        final float[][] centroids = result.centroids;
+
+        //HardAssigner is used to classify pixels into clusters by their centroids
+        final HardAssigner<float[],?,?> assigner = result.defaultHardAssigner();
+
+        /*
+
+        for (int y=0; y<input.getHeight(); y++) {
+            for (int x=0; x<input.getWidth(); x++) {
+
+                //Get the RGB (or as its LAB rather the L, A, B) values in a 3 element array (or vector) of a given pixel with coordinates x, y
+                float[] pixel = input.getPixelNative(x, y);
+
+                //the assign method will return the index in the array of centroids of which centroid (so which cluster) the
+                //pixel was classified as
+                int centroidIndex = assigner.assign(pixel);
+
+                //Change the colour of pixel with coordinates x, y to the average value of the cluster (the centroid)
+                //This means that all pixels in the same cluster will now have the same colour as the centroid
+                input.setPixelNative(x, y, centroids[centroidIndex]);
+
+            }
+        }
+
+        */
+
+        input3.processInplace(new PixelProcessor<Float[]>() {
+
+            public Float[] processPixel(Float[] pixel){
+
+                float[] prim = new float[3];
+
+                for(int i = 0; i < 3; i++){
+
+                    prim[i] = pixel[i];
+
+                }
+
+                int centroidIndex = assigner.assign(prim);
+
+                Float[] output = new Float[3];
+
+                for(int i = 0; i < 3; i++){
+
+                    output[i] = centroids[centroidIndex][i];
+
+                }
+
+                return output;
+
+            }
+
+        });
+
+        FelzenszwalbHuttenlocherSegmenter segmenter = new FelzenszwalbHuttenlocherSegmenter();
+        List<ConnectedComponent> segments = segmenter.segment(input3);
+
+        /*
+        for(int i = 0; i < segments.size(); i++){
+
+            if(segments.get(i).calculateArea() < 50)
+                continue;
+
+            input3.drawText("Point:" + i, segments.get(i).calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);
+
+        }
+
+        //Convert back into RGB colour space in order to display properly
+        input3 = ColourSpace.convert(input3, ColourSpace.RGB);
+        DisplayUtilities.display(input3);*/
+
         
+
     }
 
 }
