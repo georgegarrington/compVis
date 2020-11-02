@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ch2-clustering.iml" filepath="$PROJECT_DIR$/ch2-clustering.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ch2Clustering.iml" filepath="$PROJECT_DIR$/ch2Clustering.iml" />
     </modules>
   </component>
 </project>
