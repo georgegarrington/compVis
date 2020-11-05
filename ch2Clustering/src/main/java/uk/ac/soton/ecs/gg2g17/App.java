@@ -307,7 +307,7 @@ public class App {
         input3 = ColourSpace.convert(input3, ColourSpace.RGB);
         DisplayUtilities.display(input3);*/
 
-        
+
 
     }
 
