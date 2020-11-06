@@ -7,10 +7,12 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
     //Purely for testing
     public static void main(String[] args){
-        System.out.println((1 - 1) / 2);
+        System.out.println(-(4/2));
     }
 
     private float[][] kernel;
+    private int kWidth;
+    private int kHeight;
 
     public MyConvolution(float[][] kernel) throws Exception{
 
@@ -26,6 +28,11 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
         }
 
         this.kernel = kernel;
+
+        //The dimensionality has been verified so the "width" of the kernel is simply the length of the first inner array
+        kWidth = kernel[0].length;
+        kHeight = kernel.length;
+
     }
 
     @Override
@@ -38,13 +45,13 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
         float[][] pixels = image.pixels;
 
-        for(int i = 0; i < pixels.length; i++){
+        for(int i = 0; i < kHeight; i++){
 
             /*
             Each inner array of pixels should all be the same length,
             but generalise it anyway
             */
-            for(int j = 0; j < pixels[i].length; j++){
+            for(int j = 0; j < kWidth; j++){
 
                 /*
                 How much the starting "point" of the kernel is offset by relative to the current cell
@@ -52,10 +59,31 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
                 then the offset is -1,-1 and any values with negative indices will be treated as zero
                 in order to implement zero padding
                 */
-                int kernelXOffset = (kernel[0].length - 1) / 2;
-                int kernelYOffset = (kernel.length - 1) / 2;
+                int xOffset = -((kHeight - 1) / 2);
+                int yOffset = -((kWidth - 1) / 2);
 
-                //for(int k = 0; k < kernel.length)
+                int sum = 0;
+
+                //kernelX and kernelY are the relative indices of the template being looked at
+                for(int k = yOffset, kernelY = 0; k < kHeight; k++, kernelY++){
+
+                    //Adding zero is clearly the same as doing nothing, so just do nothing
+                    if(k < 0)
+                        continue;
+
+                    for(int l = xOffset, kernelX = 0; l < kWidth; l++, kernelX++){
+
+                        //Adding zero is clearly the same as doing nothing, so just do nothing
+                        if(l < 0)
+                            continue;
+
+                        sum += kernel[kernelY][kernelX] * pixels[k][l];
+
+                    }
+
+                }
+
+                image.setPixelNative(j, i, sum);
 
             }
 
