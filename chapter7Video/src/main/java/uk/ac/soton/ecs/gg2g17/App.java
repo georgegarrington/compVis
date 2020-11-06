@@ -29,9 +29,10 @@ import java.net.URL;
  */
 public class App {
 
+    //MBFImage is the type of the frame contained within the video collection
     private static Video<MBFImage> video;
 
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
 
         init();
         exercise1();
@@ -68,7 +69,7 @@ public class App {
             public void beforeUpdate(MBFImage frame) {
                 //frame.processInplace(new CannyEdgeDetector());
 
-                //Apply the Gaussian blur function instead to achieve a blurred video
+                //Apply the Gaussian blur function instead to achieve a blurred video instead of the Canny edge detector
                 frame.processInplace(new Gaussian2D(10, (float) 10));
             }
 
