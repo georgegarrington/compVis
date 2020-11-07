@@ -59,6 +59,8 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
     public void processImage(FImage image) {
 
         float[][] pixels = image.pixels;
+
+        //Make the output image the same size as the image in the argument
         float[][] convoluted = new float[pixels.length][pixels[0].length];
 
         //For each row
@@ -78,14 +80,16 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
                 /*
                 imaginaryI and imaginaryJ keep track of the "imaginary" cell location in the kernel for instance
                 if you were looking at pixel 0,0 and your kernel was 3x3 then imaginaryI and imaginaryJ would
-                initially be -1,-1 respectively, however as this is not valid the loop will know to skip them.
+                initially be -1,-1 respectively, however as this is not valid the loop will know to skip them,
+                so you will never have an index out of bounds problem.
+
                 It will also know to move onto looking at the next iteration once imaginaryI or imaginaryJ
                 has become greater than the bounds of the image as clearly there are no longer any possible cells
                 in the kernel that are currently overlayed onto the image.
 
                 kernelI and kernelJ keep track of the relative location of the cell being looked at in the kernel
-                that will be timesed with the "overlay" position of this kernel cell with the pixel in the image
-                that it is "overlayed" on
+                that will be multiplied with the "overlay" position of this kernel cell with the pixel in the image
+                that it is "overlaid" on
                 */
                 for(int imaginaryI = i - ((kHeight - 1) / 2), kernelI = 0; kernelI < kHeight; imaginaryI++, kernelI++){
 
@@ -116,93 +120,6 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
         }
 
         image.pixels = convoluted;
-
-    }
-
-    public static void test3(){
-
-        float[][] pixels = {
-                {1,2,3,4},
-                {5,6,7,8},
-                {9,10,11,12},
-                {13,14,15,16}
-        };
-
-        //This is not generalised so make sure to change it later, something like this
-        //float[][] output = new float[pixels.length][pixels[0].length]
-        float[][] output = new float[4][4];
-
-        //For each row
-        for(int i = 0; i < pixels.length; i++){
-
-            //For each cell in the row replace it with the output of the kernel
-            for(int j = 0; j < pixels[0].length; j++){
-
-                float sum = 0;
-
-                /*
-                The shifted "start" indices which may go out of the filter, it may not be imaginary but obviously it is if it is
-                out of bounds hence the name convention
-                */
-                for(int imaginaryI = i - ((kernel.length - 1) / 2), kernelI = 0; kernelI < kernel.length; imaginaryI++, kernelI++){
-
-                    if(imaginaryI >= pixels.length)
-                        break;
-
-                    if(imaginaryI < 0)
-                        continue;
-
-                    for(int imaginaryJ = j - ((kernel[0].length - 1) / 2), kernelJ = 0; kernelJ < kernel[0].length; imaginaryJ++, kernelJ++){
-
-                        if(imaginaryJ >= pixels[0].length)
-                            break;
-
-                        if(imaginaryJ < 0)
-                            continue;
-
-                        //This block is all for testing can be deleted after
-                        System.out.println("Imaginary position: " + imaginaryI + ", " + imaginaryJ);
-                        System.out.println("With relative position in the kernel: " + kernelI + ", " + kernelJ);
-                        float kernelAmt = kernel[kernelI][kernelJ];
-                        float pixelsAmt = pixels[imaginaryI][imaginaryJ];
-                        System.out.println("Will add the product of the kernel amount " + kernelAmt + " and the pixels amount " + pixelsAmt);
-                        float amtToAdd = kernelAmt * pixelsAmt;
-                        sum += amtToAdd;
-                        //System.out.println("Added: " + amtToAdd);
-
-                    }
-
-                }
-
-                output[i][j] = sum;
-
-            }
-
-        }
-
-        System.out.println("The value of pixels is: ");
-        for(float[] inner: output){
-            System.out.println(Arrays.toString(inner));
-        }
-
-    }
-
-    public static void dunnoThingy(){
-
-         /* Might be useful for some kind of reporting function
-
-        System.out.println("value of pixels is: ");
-        for(float[] inner : pixels){
-            System.out.println(Arrays.toString(inner));
-        }
-
-        System.out.println("value of kernel is:");
-        for(float[] inner : kernel){
-            System.out.println(Arrays.toString(inner));
-        }
-
-        System.out.println("value of kHeight is: " + kHeight);
-        System.out.println("value of kWidth is: " + kWidth);*/
 
     }
 
