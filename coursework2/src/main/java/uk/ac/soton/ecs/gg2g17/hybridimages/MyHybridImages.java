@@ -1,9 +1,77 @@
 package uk.ac.soton.ecs.gg2g17.hybridimages;
 
+import org.apache.commons.vfs2.FileSystemException;
+import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.data.dataset.VFSListDataset;
+import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.Gaussian2D;
 
+import java.io.File;
+import java.util.Map;
+
 public class MyHybridImages {
+
+    //JUST FOR TESTING DELETE LATER
+    public static void main(String[] args){
+
+        /*
+        This is where I have stored my images, change the path to where
+        the image pairs you want to test are. Ensure that the pairs are
+        stored together in a folder containing only those 2 pairs for
+        instance perhaps the cat and dog images are stored together in a folder
+        called "catDog"
+         */
+        VFSGroupDataset<MBFImage> images = importImages(new String[]{
+                System.getProperty("user.home"), "Downloads", "data",
+        });
+
+    }
+
+    /**
+     * Given the path of images, import them into a VFSListDataset
+     * @param path
+     * @return
+     */
+    public static VFSGroupDataset<MBFImage> importImages(String[] path){
+
+        VFSGroupDataset<MBFImage> images = null;
+
+        try {
+            images = new VFSGroupDataset<MBFImage>(generatePath(path), ImageUtilities.MBFIMAGE_READER);
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+        }
+
+        for(final Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
+
+            DisplayUtilities.display(entry.getKey(), entry.getValue());
+
+        }
+
+        return images;
+
+    }
+
+    /**
+     * Generate the platform specific file path
+     * @param path
+     * @return
+     */
+    public static String generatePath(String[] path){
+
+        String out = path[0];
+
+        for(int i = 1; i < path.length; i++){
+
+            out += File.separator + path[i];
+
+        }
+
+        return out;
+
+    }
 
     /**
      * Compute a hybrid image combining low-pass and high-pass filtered images
@@ -29,7 +97,9 @@ public class MyHybridImages {
         //Note that the input images are expected to have the same size, and the output
         //image will also have the same height & width as the inputs.
 
-        return null;
+        MBFImage lowPassed = lowPassFilter(lowImage, lowSigma);
+        MBFImage highPassed = highPassFilter(highImage, highSigma);
+        return highPassed.add(lowPassed);
 
     }
 
@@ -76,32 +146,5 @@ public class MyHybridImages {
         return original.subtract(lowPassed);
 
     }
-
-    /*
-
-    Don't think this is necessary possibly remove it...
-
-    //Subtract the first argument by the second argument and return the result
-    public static float[][] subtract(float[][] fst, float[][] snd) throws Exception {
-
-        if(fst.length != snd.length || fst[0].length != snd[0].length){
-            throw new Exception("Can only subtract matrices of the same dimension!");
-        }
-
-        float[][] subtracted = new float[fst.length][fst[0].length];
-
-        for(int i = 0; i < subtracted.length; i++){
-
-            for(int j = 0; j < subtracted[0].length; j++){
-
-                subtracted[i][j] = fst[i][j] - snd[i][j];
-
-            }
-
-        }
-
-        return subtracted;
-
-    }*/
 
 }

@@ -8,18 +8,6 @@ import java.util.Arrays;
 
 public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
-    //JUST FOR TESTING
-    public static void main(String[] args){
-
-        float[][] kernel = Gaussian2D.createKernelImage(6, 10).pixels;
-
-        System.out.println("The value of the kernel is:");
-        for(float[] inner : kernel){
-            System.out.println(Arrays.toString(inner));
-        }
-
-    }
-
     private static float[][] kernel;
     private static int kWidth;
     private static int kHeight;
