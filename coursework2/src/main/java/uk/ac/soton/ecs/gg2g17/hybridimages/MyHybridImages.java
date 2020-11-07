@@ -24,8 +24,32 @@ public class MyHybridImages {
         called "catDog"
          */
         VFSGroupDataset<MBFImage> images = importImages(new String[]{
+
+                //Use this to get the actual value of "~" as relative paths are forbidden
                 System.getProperty("user.home"), "Downloads", "data",
+
         });
+
+        /*
+        for(MBFImage image : images.get("catDog")){
+            DisplayUtilities.display(image);
+        }*/
+
+        /*
+        DisplayUtilities.display(cat);
+        DisplayUtilities.display(dog);*/
+
+
+        for(Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
+
+            VFSListDataset<MBFImage> pair = entry.getValue();
+            MBFImage fst = pair.get(0);
+            MBFImage snd = pair.get(1);
+
+            MBFImage hybrid = makeHybrid(fst, 9, snd, 4);
+            DisplayUtilities.display(hybrid, entry.getKey());
+
+        }
 
     }
 
@@ -44,11 +68,12 @@ public class MyHybridImages {
             e.printStackTrace();
         }
 
+        /*
         for(final Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
 
             DisplayUtilities.display(entry.getKey(), entry.getValue());
 
-        }
+        }*/
 
         return images;
 
