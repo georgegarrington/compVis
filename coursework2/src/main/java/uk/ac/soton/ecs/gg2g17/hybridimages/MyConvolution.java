@@ -1,30 +1,34 @@
 package uk.ac.soton.ecs.gg2g17.hybridimages;
 
 import org.openimaj.image.FImage;
+import org.openimaj.image.processing.convolution.Gaussian2D;
 import org.openimaj.image.processor.SinglebandImageProcessor;
 
 import java.util.Arrays;
 
 public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
-    //Purely for testing
+    //JUST FOR TESTING
     public static void main(String[] args){
-        //test();
-        //test2();
-        test3();
+
+        float[][] kernel = Gaussian2D.createKernelImage(6, 10).pixels;
+
+        System.out.println("The value of the kernel is:");
+        for(float[] inner : kernel){
+            System.out.println(Arrays.toString(inner));
+        }
+
     }
 
-    //private float[][] kernel;
+    private static float[][] kernel;
+    private static int kWidth;
+    private static int kHeight;
 
-    private static float[][] kernel = new float[][]{
-            new float[]{0,1,-1},
-            new float[]{1,1,0},
-            new float[]{-1,1,1}
-    };
-
-    private static int kWidth /* remove after testing */ = kernel[0].length;
-    private static int kHeight /* remove after testing */ = kernel.length;
-
+    /**
+     * Constructor ensures that dimensionality is matching (all rows same size) and non even
+     * @param kernel
+     * @throws Exception
+     */
     public MyConvolution(float[][] kernel) throws Exception{
 
         for(int i = 0; i < kernel.length - 1; i++){
@@ -54,194 +58,78 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
      */
     public void processImage(FImage image) {
 
-        //float[][] pixels = image.pixels;
+        float[][] pixels = image.pixels;
+        float[][] convoluted = new float[pixels.length][pixels[0].length];
 
-        float[][] pixels = new float[][]{
-                new float[]{1,2,3,4},
-                new float[]{5,6,7,8},
-                new float[]{9,10,11,12},
-                new float[]{13,14,15,16}
-        };
-
-        for(int i = 0; i < kHeight; i++){
-
-            /*
-            Each inner array of pixels should all be the same length,
-            but generalise it anyway
-            */
-            for(int j = 0; j < kWidth; j++){
-
-                /*
-                How much the starting "point" of the kernel is offset by relative to the current cell
-                being looked at e.g. if you were first looking at pixel 0,0 and the template size is 3x3
-                then the offset is -1,-1 and any values with negative indices will be treated as zero
-                in order to implement zero padding
-                */
-                int xOffset = -((kHeight - 1) / 2);
-                int yOffset = -((kWidth - 1) / 2);
-
-                int sum = 0;
-
-                //kernelX and kernelY are the relative indices of the template being looked at
-                for(int k = yOffset, kernelY = 0; k < kHeight; k++, kernelY++){
-
-                    //Adding zero is clearly the same as doing nothing, so just do nothing
-                    if(k < 0)
-                        continue;
-
-                    for(int l = xOffset, kernelX = 0; l < kWidth; l++, kernelX++){
-
-                        //Adding zero is clearly the same as doing nothing, so just do nothing
-                        if(l < 0)
-                            continue;
-
-                        sum += kernel[kernelY][kernelX] * pixels[k][l];
-
-                    }
-
-                }
-
-                System.out.println("sum is: " + sum);
-                pixels[i][j] = sum;
-                //image.setPixelNative(j, i, sum);
-
-            }
-
-        }
-
-    }
-
-    public static void test(){
-
-        float[][] pixels = new float[][]{
-                new float[]{1,2,3,4},
-                new float[]{5,6,7,8},
-                new float[]{9,10,11,12},
-                new float[]{13,14,15,16}
-        };
-
+        //For each row
         for(int i = 0; i < pixels.length; i++){
 
-            /*
-            Each inner array of pixels should all be the same length,
-            but generalise it anyway
-            */
+            //For each cell in the row replace it with the convoluted of the kernel
             for(int j = 0; j < pixels[0].length; j++){
 
                 /*
-                How much the starting "point" of the kernel is offset by relative to the current cell
-                being looked at e.g. if you were first looking at pixel 0,0 and the template size is 3x3
-                then the offset is -1,-1 and any values with negative indices will be treated as zero
-                in order to implement zero padding
-                */
-                int xOffset = -((kHeight - 1) / 2);
-                int yOffset = -((kWidth - 1) / 2);
-
-                int sum = 0;
-
-                //kernelX and kernelY are the relative indices of the template being looked at
-                for(int k = yOffset, kernelY = 0; k < kHeight; k++, kernelY++){
-
-                    //Adding zero is clearly the same as doing nothing, so just do nothing
-                    if(k < 0)
-                        continue;
-
-                    for(int l = xOffset, kernelX = 0; l < kWidth; l++, kernelX++){
-
-                        //Adding zero is clearly the same as doing nothing, so just do nothing
-                        if(l < 0)
-                            continue;
-
-                        sum += kernel[kernelY][kernelX] * pixels[k][l];
-
-                    }
-
-                }
-
-                System.out.println("sum is: " + sum);
-                pixels[i][j] = sum;
-
-            }
-
-        }
-
-        for(float[] inner : pixels){
-
-            System.out.println(Arrays.toString(inner));
-
-        }
-
-    }
-
-    public static void test2(){
-
-        float[][] pixels = new float[][]{
-                new float[]{1,2,3,4},
-                new float[]{5,6,7,8},
-                new float[]{9,10,11,12},
-                new float[]{13,14,15,16}
-        };
-
-        float[][] output = new float[4][4];
-
-        //for each row
-        for(int i = 0; i < pixels.length; i++){
-
-            //for each cell in the row
-            for(int j = 0; j < pixels[0].length; j++){
-
-                System.out.println("ITERATION " + i + " " + j);
-
+                The convoluted of the kernel where the product of each cell in the kernel with their respective
+                "overlayed" pixels in the image will be added to. As zero padding is required, those cells in the
+                kernel that are outside the bounds of the image will simply be ignored and instead just add
+                all possible products possible from the valid section of the kernel that is within the image
+                 */
                 float sum = 0;
 
-                for(int yOffset = i - ((kernel.length - 1) / 2), kernelY = 0; kernelY < kernel.length; yOffset++, kernelY++){
+                /*
+                imaginaryI and imaginaryJ keep track of the "imaginary" cell location in the kernel for instance
+                if you were looking at pixel 0,0 and your kernel was 3x3 then imaginaryI and imaginaryJ would
+                initially be -1,-1 respectively, however as this is not valid the loop will know to skip them.
+                It will also know to move onto looking at the next iteration once imaginaryI or imaginaryJ
+                has become greater than the bounds of the image as clearly there are no longer any possible cells
+                in the kernel that are currently overlayed onto the image.
 
-                    System.out.println("yOffset is: " + yOffset);
+                kernelI and kernelJ keep track of the relative location of the cell being looked at in the kernel
+                that will be timesed with the "overlay" position of this kernel cell with the pixel in the image
+                that it is "overlayed" on
+                */
+                for(int imaginaryI = i - ((kHeight - 1) / 2), kernelI = 0; kernelI < kHeight; imaginaryI++, kernelI++){
 
-                    if(yOffset < 0)
+                    if(imaginaryI >= pixels.length)
+                        break;
+
+                    if(imaginaryI < 0)
                         continue;
 
-                    for(int xOffset = j -((kernel[0].length - 1) / 2), kernelX = 0; kernelX < kernel[kernelY].length; xOffset++, kernelX++){
+                    for(int imaginaryJ = j - ((kWidth - 1) / 2), kernelJ = 0; kernelJ < kWidth; imaginaryJ++, kernelJ++){
 
-                        System.out.println("xOffset is: " + xOffset);
+                        if(imaginaryJ >= pixels[0].length)
+                            break;
 
-                        if(xOffset < 0)
+                        if(imaginaryJ < 0)
                             continue;
 
-                        //This block is all for testing can be deleted after
-                        System.out.println("Imaginary position: " + xOffset + ", " + yOffset);
-                        System.out.println("With relative position in the kernel: " + kernelX + ", " + kernelY);
-                        float amtToAdd = kernel[kernelY][kernelX] * pixels[yOffset][xOffset];
-                        sum += amtToAdd;
-                        System.out.println("Added: " + amtToAdd);
+                        sum += kernel[kernelI][kernelJ] * pixels[imaginaryI][imaginaryJ];
 
                     }
 
                 }
 
-                output[i][j] = sum;
+                convoluted[i][j] = sum;
 
             }
 
         }
 
-        System.out.println("The value of output is: ");
-        for(float[] inner : output){
-            System.out.println(Arrays.toString(inner));
-        }
+        image.pixels = convoluted;
 
     }
 
     public static void test3(){
 
-        float[][] pixels = new float[][]{
-                new float[]{1,2,3,4},
-                new float[]{5,6,7,8},
-                new float[]{9,10,11,12},
-                new float[]{13,14,15,16}
+        float[][] pixels = {
+                {1,2,3,4},
+                {5,6,7,8},
+                {9,10,11,12},
+                {13,14,15,16}
         };
 
-        //This is not generalised so make sure to change it later
+        //This is not generalised so make sure to change it later, something like this
+        //float[][] output = new float[pixels.length][pixels[0].length]
         float[][] output = new float[4][4];
 
         //For each row
@@ -299,7 +187,9 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
     }
 
-    /* Might be useful for some kind of reporting function
+    public static void dunnoThingy(){
+
+         /* Might be useful for some kind of reporting function
 
         System.out.println("value of pixels is: ");
         for(float[] inner : pixels){
@@ -313,5 +203,7 @@ public class MyConvolution implements SinglebandImageProcessor<Float, FImage> {
 
         System.out.println("value of kHeight is: " + kHeight);
         System.out.println("value of kWidth is: " + kWidth);*/
+
+    }
 
 }

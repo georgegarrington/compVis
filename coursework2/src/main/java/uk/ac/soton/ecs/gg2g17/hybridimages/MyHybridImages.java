@@ -32,4 +32,27 @@ public class MyHybridImages {
 
     }
 
+    /**
+     * Calculate the size of the kernel window given sigma
+     * @param sigma
+     * @return
+     */
+    public static int calcSize(int sigma){
+        int size = (int) (8.0f * sigma + 1.0f);
+        if (size % 2 == 0) size++;
+        return size;
+    }
+
+    public static float[][] lowPassFilter(float[][] original){
+
+        return null;
+
+    }
+
+    public static float[][] highPassFilter(float[][] original){
+
+        return null;
+
+    }
+
 }
