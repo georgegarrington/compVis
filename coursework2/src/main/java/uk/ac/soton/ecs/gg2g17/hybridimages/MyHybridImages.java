@@ -45,7 +45,7 @@ public class MyHybridImages {
         for(Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
 
             //Only look at the cat and dog for now
-            if(!entry.getKey().equals("dogCat"))
+            if(!entry.getKey().equals("borisTrump"))
                 continue;
 
             VFSListDataset<MBFImage> pair = entry.getValue();
@@ -54,29 +54,30 @@ public class MyHybridImages {
             //DisplayUtilities.display(cat, "Cat");
             //DisplayUtilities.display(dog, "Dog");
 
-            int sigma = 4;
+            DisplayUtilities.display(makeHybrid(dog, 4, cat, 9));
 
+            /*
+            int sigma = 4;
             int size = calcKernelSize(sigma);
             float[][] kernel = Gaussian2D.createKernelImage(size, sigma).pixels;
 
-            System.out.println("The kernel has dimension: " + kernel.length + ", " + kernel[0].length);
-            System.out.println("And it's contents are:");
-
-            for(float[] inner : kernel){
-
-                System.out.println(Arrays.toString(inner));
-
-            }
-
             try {
-                DisplayUtilities.display(dog.process(new MyConvolution(kernel)));
+                MBFImage lowPassedDog = dog.process(new MyConvolution(kernel));
+                DisplayUtilities.display(lowPassedDog);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            /*
-            FImage hybrid = makeHybrid(fst, 20, snd, 9);
-            DisplayUtilities.display(hybrid, entry.getKey());*/
+            sigma = 9;
+            size = calcKernelSize(sigma);
+            kernel = Gaussian2D.createKernelImage(size, sigma).pixels;
+
+            try {
+                MBFImage highPassedCat = cat.subtract(cat.process(new MyConvolution(kernel)));
+                DisplayUtilities.display(highPassedCat.add(0.5f));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
 
         }
 
@@ -143,23 +144,54 @@ public class MyHybridImages {
      */
     public static MBFImage makeHybrid(MBFImage lowImage, float lowSigma, MBFImage highImage, float highSigma) {
 
-        //implement your hybrid images functionality here.
-        //Your submitted code must contain this method, but you can add
-        //additional static methods or implement the functionality through
-        //instance methods on the `MyHybridImages` class of which you can create
-        //an instance of here if you so wish.
-        //Note that the input images are expected to have the same size, and the output
-        //image will also have the same height & width as the inputs.
+        int lowKernelSize = calcKernelSize(lowSigma);
+        float[][] lowKernel = Gaussian2D.createKernelImage(lowKernelSize ,lowSigma).pixels;
 
-        MBFImage lowPassed = lowPassFilter(lowImage, lowSigma);
+        MBFImage lowPassed = null;
 
-        DisplayUtilities.display(lowPassed, "Low Passed");
+        try {
+            lowPassed = lowImage.process(new MyConvolution(lowKernel));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        MBFImage highPassed = highPassFilter(highImage, highSigma);
+        int highKernelSize = calcKernelSize(highSigma);
+        float[][] highKernel = Gaussian2D.createKernelImage(highKernelSize, highSigma).pixels;
 
-        DisplayUtilities.display(highPassed, "High Passed");
+        MBFImage highPassed = null;
+
+        try {
+            highPassed = highImage.subtract(highImage.process(new MyConvolution(highKernel)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return highPassed.add(lowPassed);
+
+
+        /*
+        int sigma = 4;
+            int size = calcKernelSize(sigma);
+            float[][] kernel = Gaussian2D.createKernelImage(size, sigma).pixels;
+
+            try {
+                MBFImage lowPassedDog = dog.process(new MyConvolution(kernel));
+                DisplayUtilities.display(lowPassedDog);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            sigma = 9;
+            size = calcKernelSize(sigma);
+            kernel = Gaussian2D.createKernelImage(size, sigma).pixels;
+
+            try {
+                MBFImage highPassedCat = cat.subtract(cat.process(new MyConvolution(kernel)));
+                DisplayUtilities.display(highPassedCat.add(0.5f));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+         */
 
     }
 
