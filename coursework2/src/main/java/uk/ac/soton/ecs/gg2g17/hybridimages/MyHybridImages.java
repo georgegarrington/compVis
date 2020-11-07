@@ -4,11 +4,13 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.DisplayUtilities;
+import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.Gaussian2D;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MyHybridImages {
@@ -42,12 +44,39 @@ public class MyHybridImages {
 
         for(Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
 
-            VFSListDataset<MBFImage> pair = entry.getValue();
-            MBFImage fst = pair.get(0);
-            MBFImage snd = pair.get(1);
+            //Only look at the cat and dog for now
+            if(!entry.getKey().equals("dogCat"))
+                continue;
 
-            MBFImage hybrid = makeHybrid(fst, 9, snd, 4);
-            DisplayUtilities.display(hybrid, entry.getKey());
+            VFSListDataset<MBFImage> pair = entry.getValue();
+            MBFImage cat = pair.get(0);
+            MBFImage dog = pair.get(1);
+            //DisplayUtilities.display(cat, "Cat");
+            //DisplayUtilities.display(dog, "Dog");
+
+            int sigma = 4;
+
+            int size = calcKernelSize(sigma);
+            float[][] kernel = Gaussian2D.createKernelImage(size, sigma).pixels;
+
+            System.out.println("The kernel has dimension: " + kernel.length + ", " + kernel[0].length);
+            System.out.println("And it's contents are:");
+
+            for(float[] inner : kernel){
+
+                System.out.println(Arrays.toString(inner));
+
+            }
+
+            try {
+                DisplayUtilities.display(dog.process(new MyConvolution(kernel)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*
+            FImage hybrid = makeHybrid(fst, 20, snd, 9);
+            DisplayUtilities.display(hybrid, entry.getKey());*/
 
         }
 
@@ -123,7 +152,13 @@ public class MyHybridImages {
         //image will also have the same height & width as the inputs.
 
         MBFImage lowPassed = lowPassFilter(lowImage, lowSigma);
+
+        DisplayUtilities.display(lowPassed, "Low Passed");
+
         MBFImage highPassed = highPassFilter(highImage, highSigma);
+
+        DisplayUtilities.display(highPassed, "High Passed");
+
         return highPassed.add(lowPassed);
 
     }
@@ -168,7 +203,8 @@ public class MyHybridImages {
         subtract will clone the instance it is being called on, subtract the
         argument and then return in a new image instance
          */
-        return original.subtract(lowPassed);
+        MBFImage rtn = original.clone();
+        return rtn.subtract(lowPassed);
 
     }
 
