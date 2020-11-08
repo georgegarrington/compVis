@@ -7,6 +7,7 @@ import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.MBFImage;
 import org.openimaj.image.processing.convolution.Gaussian2D;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
 import java.io.File;
 import java.util.Map;
@@ -62,6 +63,53 @@ public class MyHybridImages {
     public static void generateTrumpOompaLoompaHybridImage(){
 
 
+
+    }
+
+    public static void genDownSample(MBFImage image){
+
+        /*
+        The images that will be displayed, show 5 different sizes where each successive
+        image in the array is half the size of the preceding image
+         */
+        MBFImage[] images = new MBFImage[5];
+        images[0] = image;
+
+        for(int i = 1; i < images.length; i++){
+
+            images[i] = ResizeProcessor.halfSize(images[i - 1]);
+
+        }
+
+        int gapSize = 10;
+        int diagramHeight = images[0].getHeight();
+        int diagramWidth = (images.length - 1) * gapSize;
+
+        for(MBFImage i : images){
+
+            diagramWidth += i.getWidth();
+            System.out.println("The dimensions of the image are: " + i.getWidth() + ", " + i.getHeight());
+
+        }
+
+        MBFImage diagram = new MBFImage(diagramWidth, diagramHeight);
+
+        System.out.println("The dimensions of the diagram are: " + diagramWidth + ", " + diagramHeight);
+
+        diagram.addInplace(255f);
+
+        diagram.drawImage(images[0], 0, 0);
+
+        //x and y coordinates to plot the image, i to count the index of the array
+        for(int x = 0, y = 0, i = 1; i < images.length; i++){
+
+            x += images[i - 1].getWidth() + gapSize;
+            y += images[i - 1].getHeight() - images[i].getHeight();
+            diagram.drawImage(images[i], x, y);
+
+        }
+
+        DisplayUtilities.display(diagram, "Diagram");
 
     }
 
@@ -122,16 +170,25 @@ public class MyHybridImages {
 
         for(Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
 
+            //FOR TESTING DELETE AFTER
+            if(!entry.getKey().equals("trumpLumpa"))
+                continue;
+
             VFSListDataset<MBFImage> pair = entry.getValue();
 
             if(pair.size() != 2)
                 throw new Exception("Make sure that you have only given pairs of images contained in" +
-                        "\n individual directories within the directory for images");
+                        "\n individual directories within the directory for images!");
 
             MBFImage fst = pair.get(0);
             MBFImage snd = pair.get(1);
 
-            DisplayUtilities.display(makeHybrid(fst, 5, snd, 9), entry.getKey());
+            MBFImage hybrid = makeHybrid(fst, 5, snd, 9);
+
+            genDownSample(hybrid);
+
+            //THIS IS HOW TO MAKE THE TRUMP / OOMPA LOOMPA IMAGE DONT CHANGE IT
+            //DisplayUtilities.display(makeHybrid(fst, 5, snd, 9), entry.getKey());
 
         }
 
