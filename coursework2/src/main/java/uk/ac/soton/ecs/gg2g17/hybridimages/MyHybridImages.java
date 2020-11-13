@@ -31,14 +31,21 @@ public class MyHybridImages {
      */
     public static MBFImage makeHybrid(MBFImage lowImage, float lowSigma, MBFImage highImage, float highSigma) {
 
+        //Use the code provided in the spec to calculate the kernel size
         int lowKernelSize = calcKernelSize(lowSigma);
         float[][] lowKernel = Gaussian2D.createKernelImage(lowKernelSize ,lowSigma).pixels;
+
+        //low pass of an image is simply the image convoluted with a gaussian kernel
         MBFImage lowPassed = lowImage.process(new MyConvolution(lowKernel));
 
+        //Use the sigma values for each image to generate their respective convolutions
         int highKernelSize = calcKernelSize(highSigma);
         float[][] highKernel = Gaussian2D.createKernelImage(highKernelSize, highSigma).pixels;
+
+        //high pass of an image is that image minus the same image convoluted with a gaussian kernel
         MBFImage highPassed = highImage.subtract(highImage.process(new MyConvolution(highKernel)));
 
+        //hybrid image is the result of adding the high pass of one image to the low pass of another image
         return highPassed.add(lowPassed);
 
     }
@@ -55,22 +62,20 @@ public class MyHybridImages {
     }
 
     /**
-     * Display a downsampling visualization of an image as shown in the spec
+     * Export a downsampling visualization of an image as shown in the spec
      * @param image
      */
-    public static void visualizeDownSample(MBFImage image){
+    public static void exportDownSample(MBFImage image){
 
         /*
-        The images that will be displayed, show 5 different sizes where each successive
-        image in the array is half the size of the preceding image
+        The images that will be displayed show 5 different sizes where each
+        successive image in the array is half the size of the preceding image
          */
         MBFImage[] images = new MBFImage[5];
         images[0] = image;
 
         for(int i = 1; i < images.length; i++){
-
             images[i] = ResizeProcessor.halfSize(images[i - 1]);
-
         }
 
         int gapSize = 10;
@@ -83,43 +88,46 @@ public class MyHybridImages {
 
         }
 
+        //Make a blank image to show the downsizing in
         MBFImage diagram = new MBFImage(diagramWidth, diagramHeight);
 
         //Make the background white
         diagram.addInplace(255f);
+
+        //First image takes up full height and starts at coordinates 0,0
         diagram.drawImage(images[0], 0, 0);
 
         //x and y coordinates to plot the image, i to count the index of the array
         for(int x = 0, y = 0, i = 1; i < images.length; i++){
 
+            //new x value is width of last image plus the gap size
             x += images[i - 1].getWidth() + gapSize;
-            y += images[i - 1].getHeight() - images[i].getHeight();
-            diagram.drawImage(images[i], x, y);
 
+            //Each subsequent image is half the size of the last so new y value is given by incrementing by height of image
+            y += images[i].getHeight();
+            diagram.drawImage(images[i], x, y);
         }
 
-        DisplayUtilities.display(diagram, "Diagram");
+        export(diagram, "My Hybrid Image");
 
     }
 
     /**
      * Save the given image as a jpeg with the given file name
-     * @param image
-     * @param fileName
+     * @param image the image to export
+     * @param fileName the desired name of the file
      */
     public static void export(MBFImage image, String fileName){
-
         try {
             ImageUtilities.write(image, new File(fileName + ".jpeg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
      * Given the path of image pairs contained in individual directories, import them into a VFSGroupDataset
-     * @param arr the path of the directory in array form
+     * @param arr the path of the directory of images in array form
      * @return images grouped in pairs by the directory they are both contained in
      */
     public static VFSGroupDataset<MBFImage> importImages(String[] arr){
@@ -152,16 +160,6 @@ public class MyHybridImages {
      */
     public static void testWithDefault(){
 
-        test(new String[]{System.getProperty("user.home"), "Downloads", "data"});
-
-    }
-
-    /**
-     * Test the images with the pairs contained in the path given in the
-     * form of an array of strings so that it works on all platforms
-     */
-    public static void test(String[] arr) {
-
         /*
         This is where I have stored my images, change the path to where
         the image pairs you want to test are. Ensure that the pairs are
@@ -169,6 +167,20 @@ public class MyHybridImages {
         instance perhaps the cat and dog images are stored together in a folder
         called "catDog"
          */
+        test(new String[]{System.getProperty("user.home"), "Downloads", "data"}, false);
+
+    }
+
+
+    /**
+     * Test the images with the pairs contained in the path given in the
+     * form of an array of strings so that it works on all platforms
+     *
+     * @param arr the path to the directory where the images are stored in the form of a string array
+     * @param display whether or not to display each hybrid image after it is made
+     */
+    public static void test(String[] arr, boolean display) {
+
         VFSGroupDataset<MBFImage> images = importImages(arr);
 
         for(Map.Entry<String, VFSListDataset<MBFImage>> entry : images.entrySet()){
@@ -187,7 +199,11 @@ public class MyHybridImages {
             image arguments
              */
             MBFImage hybrid = makeHybrid(fst, 3, snd, 10);
-            visualizeDownSample(hybrid);
+
+            if(display)
+                DisplayUtilities.display(hybrid, entry.getKey());
+
+            exportDownSample(hybrid);
 
         }
 
