@@ -37,7 +37,7 @@ public class App {
 
         init();
         //example();
-        //exercise1();
+        exercise1();
         exercise2();
 
 

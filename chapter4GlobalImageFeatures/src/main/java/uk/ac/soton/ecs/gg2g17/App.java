@@ -24,10 +24,10 @@ import java.util.List;
 public class App {
 
     public static void main( String[] args ) {
-        init();
+        foo();
     }
 
-    public static void init(){
+    public static void foo(){
 
         URL[] imageURLs = null;
 
@@ -68,6 +68,8 @@ public class App {
         //The Euclidean distance measure is symmetric meaning if you compare A with B this is then the same as comparing
         //B with A, therefore we can compare all the histograms with each other in a simple, efficient nested loop
 
+        /* EXERCISE 1 */
+
         double smallest = Double.MAX_VALUE;
 
         //Store the indices of the images which are most similar
@@ -105,6 +107,8 @@ public class App {
         System.out.println("Now going to display the two most similar images...");
         DisplayUtilities.display(images.get(fstIndex));
         DisplayUtilities.display(images.get(sndIndex));
+
+        /* EXERCISE 2 */
 
         System.out.println();
         System.out.println("Now going to use intersection comparison instead.");

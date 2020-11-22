@@ -10,6 +10,7 @@ import org.openimaj.image.pixel.ConnectedComponent;
 import org.openimaj.image.processing.convolution.FGaussianConvolve;
 import org.openimaj.image.processor.PixelProcessor;
 import org.openimaj.image.segmentation.FelzenszwalbHuttenlocherSegmenter;
+import org.openimaj.image.segmentation.SegmentationUtilities;
 import org.openimaj.image.typography.hershey.HersheyFont;
 import org.openimaj.ml.clustering.FloatCentroidsResult;
 import org.openimaj.ml.clustering.assignment.HardAssigner;
@@ -34,7 +35,7 @@ public class App {
 
         init();
         //example();
-        //exercise1();
+        exercise1();
         exercise2();
 
     }
@@ -152,27 +153,6 @@ public class App {
         //HardAssigner is used to classify pixels into clusters by their centroids
         final HardAssigner<float[],?,?> assigner = result.defaultHardAssigner();
 
-        /*
-
-        for (int y=0; y<input.getHeight(); y++) {
-            for (int x=0; x<input.getWidth(); x++) {
-
-                //Get the RGB (or as its LAB rather the L, A, B) values in a 3 element array (or vector) of a given pixel with coordinates x, y
-                float[] pixel = input.getPixelNative(x, y);
-
-                //the assign method will return the index in the array of centroids of which centroid (so which cluster) the
-                //pixel was classified as
-                int centroidIndex = assigner.assign(pixel);
-
-                //Change the colour of pixel with coordinates x, y to the average value of the cluster (the centroid)
-                //This means that all pixels in the same cluster will now have the same colour as the centroid
-                input.setPixelNative(x, y, centroids[centroidIndex]);
-
-            }
-        }
-
-        */
-
         input2.processInplace(new PixelProcessor<Float[]>() {
 
             public Float[] processPixel(Float[] pixel){
@@ -241,27 +221,6 @@ public class App {
         //HardAssigner is used to classify pixels into clusters by their centroids
         final HardAssigner<float[],?,?> assigner = result.defaultHardAssigner();
 
-        /*
-
-        for (int y=0; y<input.getHeight(); y++) {
-            for (int x=0; x<input.getWidth(); x++) {
-
-                //Get the RGB (or as its LAB rather the L, A, B) values in a 3 element array (or vector) of a given pixel with coordinates x, y
-                float[] pixel = input.getPixelNative(x, y);
-
-                //the assign method will return the index in the array of centroids of which centroid (so which cluster) the
-                //pixel was classified as
-                int centroidIndex = assigner.assign(pixel);
-
-                //Change the colour of pixel with coordinates x, y to the average value of the cluster (the centroid)
-                //This means that all pixels in the same cluster will now have the same colour as the centroid
-                input.setPixelNative(x, y, centroids[centroidIndex]);
-
-            }
-        }
-
-        */
-
         input3.processInplace(new PixelProcessor<Float[]>() {
 
             public Float[] processPixel(Float[] pixel){
@@ -293,21 +252,8 @@ public class App {
         FelzenszwalbHuttenlocherSegmenter segmenter = new FelzenszwalbHuttenlocherSegmenter();
         List<ConnectedComponent> segments = segmenter.segment(input3);
 
-        /*
-        for(int i = 0; i < segments.size(); i++){
-
-            if(segments.get(i).calculateArea() < 50)
-                continue;
-
-            input3.drawText("Point:" + i, segments.get(i).calculateCentroidPixel(), HersheyFont.TIMES_MEDIUM, 20);
-
-        }
-
-        //Convert back into RGB colour space in order to display properly
-        input3 = ColourSpace.convert(input3, ColourSpace.RGB);
-        DisplayUtilities.display(input3);*/
-
-
+        SegmentationUtilities.renderSegments(input3, segments);
+        DisplayUtilities.display(input3, "Rendered segments");
 
     }
 

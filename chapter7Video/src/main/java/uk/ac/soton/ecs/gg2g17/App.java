@@ -29,7 +29,7 @@ import java.net.URL;
  */
 public class App {
 
-    //MBFImage is the type of the frame contained within the video collection
+    //MBFImage is the type of frame contained within the video collection
     private static Video<MBFImage> video;
 
     public static void main(String[] args) {
@@ -40,6 +40,7 @@ public class App {
     }
 
     public static void init(){
+
         try {
             video = new XuggleVideo(new URL("http://static.openimaj.org/media/tutorial/keyboardcat.flv"));
         } catch (MalformedURLException e) {
