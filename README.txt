@@ -1,4 +1,4 @@
-copy and past the following into terminal to make a new maven project with
+opcopy and past the following into terminal to make a new maven project with
 all the openimaj dependencies you need:
 
 mvn -DarchetypeGroupId=org.openimaj -DarchetypeArtifactId=openimaj-quickstart-archetype  -DarchetypeVersion=1.3.10  archetype:generate
