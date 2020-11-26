@@ -35,19 +35,73 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java/uk/ac/soton/ecs/gg2g17" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
-  <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+  <component name="RunManager" selected="Application.App">
+    <configuration name="App (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="uk.ac.soton.ecs.gg2g17.ch13.App" />
+      <module name="coursework1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="uk.ac.soton.ecs.gg2g17.ch13.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="App (2)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="uk.ac.soton.ecs.gg2g17.ch12.App" />
+      <module name="coursework1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="uk.ac.soton.ecs.gg2g17.ch12.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="uk.ac.soton.ecs.gg2g17.ch14.App" />
+      <module name="coursework1" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="uk.ac.soton.ecs.gg2g17.ch14.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
       <option name="arquillianRunConfiguration">
         <value>
           <option name="containerStateName" value="" />
         </value>
       </option>
-      <option name="TEST_OBJECT" value="class" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.App" />
+        <item itemvalue="Application.App (2)" />
+        <item itemvalue="Application.App (1)" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -57,7 +111,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1606225015933</updated>
-      <workItem from="1606225018763" duration="748000" />
+      <workItem from="1606225018763" duration="2585000" />
+      <workItem from="1606386514281" duration="107000" />
+      <workItem from="1606386627281" duration="2956000" />
+      <workItem from="1606396189052" duration="1805000" />
     </task>
     <servers />
   </component>
@@ -65,9 +122,29 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="510" y="244" key="chooseDestDirectoryDialog" timestamp="1606225478106">
+    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser" timestamp="1606397781106">
       <screen x="0" y="25" width="1440" height="875" />
     </state>
-    <state x="510" y="244" key="chooseDestDirectoryDialog/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606225478106" />
+    <state x="533" y="173" key="#com.intellij.ide.util.MemberChooser/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606397781106" />
+    <state width="1398" height="228" key="GridCell.Tab.0.bottom" timestamp="1606398129566">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.bottom/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606398129566" />
+    <state width="1398" height="228" key="GridCell.Tab.0.center" timestamp="1606398129565">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.center/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606398129565" />
+    <state width="1398" height="228" key="GridCell.Tab.0.left" timestamp="1606398129565">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.left/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606398129565" />
+    <state width="1398" height="228" key="GridCell.Tab.0.right" timestamp="1606398129566">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state width="1398" height="228" key="GridCell.Tab.0.right/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606398129566" />
+    <state x="510" y="244" key="chooseDestDirectoryDialog" timestamp="1606225749258">
+      <screen x="0" y="25" width="1440" height="875" />
+    </state>
+    <state x="510" y="244" key="chooseDestDirectoryDialog/0.25.1440.875/1440.25.1112.809@0.25.1440.875" timestamp="1606225749258" />
   </component>
 </project>
